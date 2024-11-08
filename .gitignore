@@ -1,0 +1,35 @@
+# Ignore object files, static and shared libraries
+*.o
+*.obj
+*.so
+*.dll
+*.dylib
+*.a
+*.lib
+
+# Ignore executables
+*.exe
+*.out
+*.app
+
+# ignore vim files
+*.out~
+*.out.un~
+*~
+
+# Ignore build directories
+/build/
+/bin/
+/lib/
+
+# Ignore other build system files
+Makefile
+CMakeCache.txt
+CMakeFiles/
+/cmake-build-debug/
+/cmake-build-release/
+
+# Ignore debug and release folders
+/Debug/
+/Release/
+
