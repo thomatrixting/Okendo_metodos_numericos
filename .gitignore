@@ -12,6 +12,11 @@
 *.out
 *.app
 
+# ignore vim files
+*.out~
+*.out.un~
+*~
+
 # Ignore build directories
 /build/
 /bin/
