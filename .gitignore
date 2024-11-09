@@ -16,6 +16,8 @@
 *.out~
 *.out.un~
 *~
+#ignore editor congfigure files
+*.vscode
 
 # Ignore build directories
 /build/
