@@ -36,8 +36,8 @@ int main() {
 long double pi_aprox(unsigned int n, bool print_values) {
     long double pi_estimation = 0;
     long double instance_value = 0;
-    for (unsigned int k = 0; k <= n; k++) {
-        long double f1 = 4.0 / (8.0 * k + 1.0);
+    for (unsigned int k = 0; k <= n; k++) { //depends on the procesor but adding the values this ways reduces the error but takes more memory
+        long double f1 = 4.0 / (8.0 * k + 1.0); 
         long double f2 = 2.0 / (8.0 * k + 4.0);
         long double f3 = 1.0 / (8.0 * k + 5.0);
         long double f4 = 1.0 / (8.0 * k + 6.0);
