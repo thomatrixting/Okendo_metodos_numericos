@@ -1,22 +1,22 @@
 #include <iostream>
 #include <cmath>
-#include <numbers>
 #include <string>
-#include <stdexcept>
+
+# define M_PIl 3.141592653589793238462643383279502884L //difine pi as a long double with 18 decimal places
 
 using std::cout;
 using std::cin;
 
-const unsigned int PRECISION = 15; //as MI_PI is a double and have a precision of 15 decimal places
+const unsigned int PRECISION = 18; // Max presicion corresponding a long double
 
-double pi_aprox(unsigned int n, bool print_values);
-double compute_error(double computed_value, double true_value, unsigned int relevant_decimal_places, bool print_values);
+long double pi_aprox(unsigned int n, bool print_values);
+long double compute_error(long double computed_value, long double true_value, unsigned int relevant_decimal_places, bool print_values);
 
-int main(void) {
-
+int main() {
+    
     for (int n = 0; n <= 20; n++) {
-        double pi_estimation = pi_aprox(n, false);
-        double error = compute_error(pi_estimation, M_PI, PRECISION,false);
+        long double pi_estimation = pi_aprox(n, false);
+        long double error = compute_error(pi_estimation, M_PIl, PRECISION, false);
 
         cout << "pi estimation for n: " << n << " ";
 
@@ -25,52 +25,41 @@ int main(void) {
         cout.setf(std::ios::scientific);
         cout << pi_estimation << " ";
 
-        // Print error with 2 decimal places truncate it
+        // Print error with 8 decimal places 
         cout.precision(8);
-        cout << "error: " << error << "%\n";
-
+        cout << "error: " << error * 100 << "%\n";
     }
+    
     return 0;
 }
 
-double pi_aprox(unsigned int n, bool print_values) {
-    double pi_estimation = 0;
-    
-    double instance_value = 0;
-    for (float k = 0; k <= n; k++){
-
-        double f1 = 4 / (8*k+1);
-        double f2 = 2 / (8*k+4);
-        double f3 = 1 / (8*k+5);
-        double f4 = 1 / (8*k+6);
+long double pi_aprox(unsigned int n, bool print_values) {
+    long double pi_estimation = 0;
+    long double instance_value = 0;
+    for (unsigned int k = 0; k <= n; k++) {
+        long double f1 = 4.0 / (8.0 * k + 1.0);
+        long double f2 = 2.0 / (8.0 * k + 4.0);
+        long double f3 = 1.0 / (8.0 * k + 5.0);
+        long double f4 = 1.0 / (8.0 * k + 6.0);
         
-        double multiplier = 1 / std::pow(16,k);
-
-        instance_value = multiplier*(f1-f2-f3-f4); //is beter to declare the computacion in steps or make it all at once?
+        long double multiplier = 1.0 / std::pow(16.0, k);
+        instance_value = multiplier * (f1 - f2 - f3 - f4);
 
         pi_estimation += instance_value;
     }
-    if (print_values){
-        cout.precision(PRECISION); //as pi have a presicion of 15 decimal numbers on c++ ussing double
+
+    if (print_values) {
+        cout.precision(PRECISION);
         cout.setf(std::ios::scientific);
-        cout << "the estimation of pi is: " << pi_estimation << "\n";
-
+        cout << "The estimation of pi is: " << pi_estimation << "\n";
     }
-
 
     return pi_estimation;
 }
 
-double compute_error(double computed_value, double true_value, unsigned int relevant_decimal_places, bool print_values) {
-    // Scale values by 10^relevant_decimal_places and truncate by casting to int so the error is more exact
-    double scale_factor = std::pow(10, relevant_decimal_places);
-    double scaled_computed = static_cast<long int>(computed_value * scale_factor) ;
-    double scaled_true = static_cast<long int>(true_value * scale_factor) ;
+long double compute_error(long double computed_value, long double true_value, unsigned int relevant_decimal_places, bool print_values) {
+    long double error = std::abs(computed_value - true_value) / true_value;
 
-    // Compute error
-    double error = std::abs(scaled_computed - scaled_true) / scaled_true;
-
-    // Print error if requested
     if (print_values) {
         std::cout.precision(relevant_decimal_places);
         std::cout << std::fixed;
