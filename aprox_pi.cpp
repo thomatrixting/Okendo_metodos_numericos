@@ -2,7 +2,7 @@
 #include <iostream>
 #include <cmath>
 
-# define M_PIl 3.141592653589793238462643383279502884L //difine pi as a long double with 18 decimal places
+# define M_PIl 3.141592653589793238462643383279502884L //difine pi as a long double with 18 decimal places, i use more in the definicion but the long can only handle 18
 
 using std::cout;
 using std::cin;
@@ -23,7 +23,7 @@ int main() {
 
         cout << "pi estimation for n: " << n << " ";
 
-        // Print pi_estimation in scientific notation with the given decimal places
+        // Print pi_estimation in scientific notation   with the given decimal places
         cout.precision(PRECISION);
         cout << pi_estimation << " ";
 
