@@ -1,29 +1,42 @@
+//computes the highest prime number of given positive integer
+//c++17
 #include <iostream> 
-#include <vector> //there is literally not other way to handle arrays
+#include <vector> 
 
-using std::cout;
-std::vector<long unsigned int> prime_factors(long unsigned int number);
+using std::cout; //this is not a bad practice the profersor itself say it
+using std::cerr;
+
+
+std::vector<long unsigned int> compute_prime_factors(long unsigned int number);
 
 int main(int argc, char **argv){
 
-    if (argc != 2) {
-        std::cerr << "ERROR. Program should be called as:\n";
-        std::cerr << argv[0] << " n\n";
-        std::cerr << "n : highest number in prime sum\n";
+    if (argc != 2) { //make the verificacion 
+        cerr << "ERROR. Program should be called as:\n";
+        cerr << argv[0] << " n\n";
+        cerr << "n : number\n";
         return 1;
-    }    
+    }
 
-    long unsigned int n = std::stoul(argv[1]); // Change to stoul for unsigned long
-    std::vector<long unsigned int> factors = prime_factors(n);
+    //interpret input
+    std::string input = argv[1];
+    if (input[0] == '-'){ //if it have a - 
+        cerr << "ERROR: Input cannot be negative.\n";
+        return 1; //halt if nuber is negative
+    }
+
+    long unsigned int n = std::stoul(input);  // stoul for unsigned long   
+
+    std::vector<long unsigned int> factors = compute_prime_factors(n);
 
     cout << "The highest prime factor is: " << factors.back() << "\n";
 
     return 0;
 }
 
-std::vector<long unsigned int> prime_factors(long unsigned int number) {
+std::vector<long unsigned int> compute_prime_factors(long unsigned int number) {
     
-    std::vector<long unsigned int> factors;
+    std::vector<long unsigned int> factors; //define the vector
     long unsigned int number_instance = number; //it takes more memory but it ensures that any wrong happens
 
     long unsigned int divider = 2; //start dividing by 2 and then continue
@@ -31,10 +44,10 @@ std::vector<long unsigned int> prime_factors(long unsigned int number) {
     for (long unsigned int i = 1; i <= number_instance; i++ ) {
 
         while (number_instance % divider == 0) { //so i put n times 2 for example if i have 8
-            factors.push_back(divider);
+            factors.push_back(divider); //add a term to de vector
             number_instance /= divider;
         }
-        divider = 2*i+1; //much more eficient as i only see odd numbers, even faster is igner 6 multiples
+        divider = 2*i+1; //much more eficient as i only see odd numbers, even faster is ignorer 6 multiples
     }
     return factors;
 
