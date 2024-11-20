@@ -12,7 +12,7 @@ std::vector<long unsigned int> generate_fibonachi_secience(long unsigned int lim
 long unsigned int sum_odd_terms(std::vector<long unsigned int> vector, int size);
 
 int main(int argc, char **argv) {
-    long unsigned int n; //n will be managed by interpret input a global variable so is not define here
+    long unsigned int n=0; //n will be managed by interpret input a global variable so is not define here
     int vector_size = 0;
 
     //interpret input

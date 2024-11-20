@@ -12,7 +12,7 @@ long unsigned int sum_of_primes(long unsigned int highest_prime);
 
 int main(int argc, char **argv){
 
-    long unsigned int n;  //just defined as interpret input will handle it
+    long unsigned int n=0;  //just defined as interpret input will handle it
 
     bool is_valid_input = interpret_input(n,argc,argv);
     if (!is_valid_input){
