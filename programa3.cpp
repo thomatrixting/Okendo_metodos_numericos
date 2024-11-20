@@ -7,46 +7,61 @@ using std::cout; //this is not a bad practice the profersor itself say it
 using std::cerr;
 
 // Declaracion of functions
+bool interpret_input(long unsigned int &n,int argc, char **argv);
 std::vector<long unsigned int> generate_fibonachi_secience(long unsigned int limit, int &size);
 long unsigned int sum_odd_terms(std::vector<long unsigned int> vector, int size);
 
 int main(int argc, char **argv) {
-
-    if (argc != 2) {
-        std::cerr << "ERROR. Program should be called as:\n";
-        std::cerr << argv[0] << " n\n";
-        std::cerr << "n : highest integer in Fibonacci sequence\n";
-        return 1;
-    }
+    long unsigned int n; //n will be managed by interpret input a global variable so is not define here
+    int vector_size = 0;
 
     //interpret input
-    std::string input = argv[1];
-    if (input[0] == '-'){ //if it have a - 
-        cerr << "ERROR: Input cannot be negative.\n";
-        return 1; //halt if nuber is negative
+    bool is_valid_input = interpret_input(n,argc,argv);
+    if (!is_valid_input){
+        return 1; 
     }
 
-    long unsigned int n = std::stoul(input);  // stoul for unsigned long   
-
-    if (n < 2) { // validacion to make sure is ok
-        std::cerr << "ERROR. Index of Fibonacci sequence should be more or equal to 2\n";
-        std::cerr << "Index: " << n << " was given\n";
-        return 1;
-    }
-
-    int size = 0;
 
     // call to the function fibonachi and returns a vector
-    std::vector<long unsigned int> fibonacci_sequence = generate_fibonachi_secience(n, size);
+    std::vector<long unsigned int> fibonacci_sequence = generate_fibonachi_secience(n, vector_size);
 
     // sum of odd terms of the fibonachi secuecne
-    long unsigned int sum_of_odd_fibonacci = sum_odd_terms(fibonacci_sequence, size);
+    long unsigned int sum_of_odd_fibonacci = sum_odd_terms(fibonacci_sequence, vector_size);
 
     // print result
     cout << "Sum of odd numbers in Fibonacci sequence: " << sum_of_odd_fibonacci << "\n";
 
     return 0;
 }
+
+bool interpret_input(long unsigned int &n,int argc, char **argv){
+
+    if (argc != 2) {
+        std::cerr << "ERROR. Program should be called as:\n";
+        std::cerr << argv[0] << " n\n";
+        std::cerr << "n : highest integer in Fibonacci sequence\n";
+        return false;
+    }
+
+    //interpret input
+    std::string input = argv[1];
+    if (input[0] == '-'){ //if it have a - 
+        cerr << "ERROR: Input cannot be negative.\n";
+        return false; //halt if nuber is negative
+    }
+
+    n = std::stoul(input);  // stoul for unsigned long   
+    //define n globaly
+
+    if (n < 2) { // validacion to make sure is ok
+        std::cerr << "ERROR. Index of Fibonacci sequence should be more or equal to 2\n";
+        std::cerr << "Index: " << n << " was given\n";
+        return false;
+    }
+
+    return true;
+}
+
 
 // Function that calculates the Fibonacci sequence and returns a pointer to the array.
 std::vector<long unsigned int> generate_fibonachi_secience(long unsigned int limit, int &size) { //size is used so that only the &size function has to be calculated in this function and can be used globally.

@@ -6,32 +6,46 @@
 using std::cout; //this is not a bad practice the profersor itself say it
 using std::cerr;
 
+bool interpret_input(long unsigned int &n,int argc, char **argv);
 bool isprime(long unsigned int number);
 long unsigned int sum_of_primes(long unsigned int highest_prime);
 
 int main(int argc, char **argv){
 
-    if (argc != 2) { //make the validacion of the numbers
-        cerr << "ERROR. Program should be called as:\n";
-        cerr << argv[0] << " n\n";
-        cerr << "n : highest number in prime sum\n";
-        return 1;
-    } 
+    long unsigned int n;  //just defined as interpret input will handle it
 
-    //interpret input
-    std::string input = argv[1];
-    if (input[0] == '-'){ //if it have a - 
-        cerr << "ERROR: Input cannot be negative.\n";
-        return 1; //halt if nuber is negative
+    bool is_valid_input = interpret_input(n,argc,argv);
+    if (!is_valid_input){
+        return 1; //halt if anything wrong
     }
-
-    long unsigned int n = std::stoul(input);  // stoul for unsigned long
 
     long unsigned int sumatory = sum_of_primes(n);
 
     cout << "The sum is: " << sumatory << "\n";
 
     return 0;
+}
+
+bool interpret_input(long unsigned int &n,int argc, char **argv){
+
+    if (argc != 2) {
+        std::cerr << "ERROR. Program should be called as:\n";
+        std::cerr << argv[0] << " n\n";
+        std::cerr << "n : highest integer in Fibonacci sequence\n";
+        return false;
+    }
+
+    //interpret input
+    std::string input = argv[1];
+    if (input[0] == '-'){ //if it have a - 
+        cerr << "ERROR: Input cannot be negative.\n";
+        return false; //halt if nuber is negative
+    }
+
+    n = std::stoul(input);  // stoul for unsigned long   
+    //define n globaly
+
+    return true;
 }
 
 long unsigned int sum_of_primes(long unsigned int highest_prime) {
