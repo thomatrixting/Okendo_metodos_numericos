@@ -14,7 +14,7 @@ int main(int nargs, char **args) {
     }
     else {
         char character = args[1][0]; //why is this
-	
+
         int length = std::stoi(args[2]);
         
         printNchar(length, character);
