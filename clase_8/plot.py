@@ -4,7 +4,7 @@ import pandas as pd
 
 import sys
 
-data = pd.read_csv(sys.argv[1])
+data =  pd.read_csv(sys.argv[1])
 
 fig, ax = plt.subplots(1,1)
 
