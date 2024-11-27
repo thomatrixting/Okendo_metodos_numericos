@@ -28,3 +28,5 @@ plt.tight_layout()
 
 # Show the plot
 plt.show()
+
+plt.savefig('lineplot_example.pdf', format='pdf', bbox_inches='tight')
