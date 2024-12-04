@@ -19,6 +19,8 @@ double fprime(double x);
 
 double compute_error(double true_value, double estimated_value);
 
+void make_simulation(double x);
+
 int main(int argc, char **argv){
 
     if (argc != 2) {
@@ -31,6 +33,11 @@ int main(int argc, char **argv){
     }
 
     double x = std::stod(argv[1]); //read input
+
+    make_simulation(x);
+}
+
+void make_simulation(double x){
 
     std::ofstream fout("datos.txt");
 
@@ -65,6 +72,7 @@ int main(int argc, char **argv){
         fout <<  cd_richar_error << "\n";
     }
 
+    fout.close();
 }
 
 

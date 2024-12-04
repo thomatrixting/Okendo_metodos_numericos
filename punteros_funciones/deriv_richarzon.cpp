@@ -19,10 +19,9 @@ double fprime(double x);
 
 double compute_error(double true_value, double estimated_value);
 
-int main(int argc, char **argv){
+void test_functions(double x, double h);
 
-    cout.precision(16);
-    cout.setf(std::ios::scientific); 
+int main(int argc, char **argv){
 
 
     if (argc != 3) {
@@ -36,6 +35,14 @@ int main(int argc, char **argv){
 
     double x = std::stod(argv[1]); //read input
     double h = std::stod(argv[2]);
+
+    test_functions(x,h);
+
+}
+
+void test_functions(double x, double h){
+    cout.precision(16);
+    cout.setf(std::ios::scientific); 
 
     double df = fprime(x);
 
@@ -58,8 +65,6 @@ int main(int argc, char **argv){
     double cd_richar_error = compute_error(df, cd_richar);
     cout << "central richar deriv: " << cd_richar << "\n";
     cout << "error central richar deriv: " << cd_richar_error << "\n";
-
-
 }
 
 
