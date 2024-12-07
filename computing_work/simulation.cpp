@@ -2,6 +2,7 @@
 #include <cmath>
 #include <vector>
 #include <functional>
+#include <fstream>
 
 using std::cout;
 using std::cerr;
@@ -24,32 +25,38 @@ long double force_y_function(long double t);
 
 int main(int argc, char **argv){
 
-    cout.precision(18);
-    cout.setf(std::ios::scientific); 
-
-    if (argc != 2) {
+    if (argc != 1) {
 
         std::cerr << "ERROR. Program should be called as:\n";
-        std::cerr << argv[0] << " x\n";
-        std::cerr << "x: a value between 0 and 1 in which compute the velocity\n";
+        std::cerr << argv[0] << "\n";
+        std::cerr << "no argument\n";
         
         return 1;
     }
 
-    long double x = std::stold(argv[1]);
-    long double y = compute_y_displacement(x);
+    std::ofstream fout("datos.csv");
 
-    vector<vector<long double>> integracion_limits =    {{0,x},
-                                                         {0,y}};
-    //as the interval of x is [0,1] and y also stars at 0 when x=0 the integracion limits stars at 0
+    fout.precision(18);
+    fout.setf(std::ios::scientific);
 
-    std::vector<rfptr> F_vectorial = {force_x_function, force_y_function};
+    fout<<"x, velocity\n";
 
-    long double work = integrate_vectorial_function_gauss5(F_vectorial,integracion_limits);
-    long double velocity = compute_velocity(work, object_mass);
+    for( long double x=0.01; x<1; x += 0.01){
+        long double y = compute_y_displacement(x);
 
-    cout << "work: " << work << "\n";
-    cout << "the velocity is: " << velocity << "\n";
+        vector<vector<long double>> integracion_limits =    {{0,x},
+                                                            {0,y}};
+        //as the interval of x is [0,1] and y also stars at 0 when x=0 the integracion limits stars at 0
+
+        std::vector<rfptr> F_vectorial = {force_x_function, force_y_function};
+
+        long double work = integrate_vectorial_function_gauss5(F_vectorial,integracion_limits);
+        long double velocity = compute_velocity(work, object_mass);
+
+        fout << x << ",";
+        fout << velocity << "\n";
+
+    }
 
     return 0;
 }
@@ -111,7 +118,7 @@ long double compute_velocity(const long double work, const long double mass){
 }
 
 long double force_x_function(long double t){
-    return std::log( sqrt( t +1) );
+    return std::log( sqrt(t+1) );
 }
 long double force_y_function(long double t){
     return std::sin( std::pow(t,2) );
