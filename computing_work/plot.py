@@ -1,31 +1,33 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+import seaborn as sns
 
-df = pd.read_csv('datos.csv')
-print(df.columns)
+# Leer los datos
+df = pd.read_csv('data.csv')
 
-# Create the figure and axis
+# Establecer estilo Seaborn
+sns.set(style="whitegrid", palette="pastel", context="notebook")
+
+# Crear la figura y los ejes
 fig, ax = plt.subplots(figsize=(10, 6))
 
-# Plot the data
+# Graficar los datos con Seaborn para agregar una línea de tendencia con color
+sns.lineplot(x='x', y=' velocity', data=df, ax=ax, color='crimson', linewidth=2, marker='o', markersize=7)
 
-ax.plot('x', ' velocity', linewidth=2, linestyle='-', marker='o', markersize=3, data = df)
+# Personalización del título y etiquetas
+ax.set_title('Gráfica del desplazamiento (x) con respecto a la velocidad (v)', fontsize=14, weight='bold')
+ax.set_xlabel("Desplazamiento (x)", fontsize=12)
+ax.set_ylabel("Velocidad (v)", fontsize=12)
 
-# Add grid
-ax.grid(visible=True, which='both', linestyle='--', linewidth=0.5, alpha=0.7)
-
-# Customize the plot
-ax.set_title('grafica del desplazmiento en x con respecto a v', fontsize=12, weight='bold')
-
-ax.set_xlabel("x")
-ax.set_ylabel("velocidad")
-ax.legend(fontsize=12)
-# Adjust tick parameters
+# Ajustar los parámetros de las marcas
 ax.tick_params(axis='both', which='major', labelsize=10)
 
-# Tight layout for better spacing
+# Aplicar un ajuste compacto del diseño
 plt.tight_layout()
-# Show the plot
-plt.savefig('figura_1.pdf', format='pdf', bbox_inches='tight')
+
+# Guardar la gráfica en formato PDF
+plt.savefig('figura.pdf', format='pdf', bbox_inches='tight')
+
+# Mostrar la gráfica
 plt.show()
