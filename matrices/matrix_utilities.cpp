@@ -250,7 +250,7 @@ void multiply_by_transpose(const std::vector<double> &matrix, const std::vector<
 }
 
 void matrix_to_the_power(const std::vector<double> &in_matrix, const std::vector<int> &dims_in,
-                      std::vector<double> &out_matix, std::vector<int> &dims_out, int power)
+                      std::vector<double> &out_matrix, std::vector<int> &dims_out, int power)
 {
     //ensure that is a scuare matrix
     int m = dims_in[0];
@@ -267,28 +267,32 @@ void matrix_to_the_power(const std::vector<double> &in_matrix, const std::vector
         std::cerr << "halting program";
         std::exit(1);
     } 
-    out_matix.resize(m * m); 
+    out_matrix.resize(m * m); 
 
     //TODO make this more eficient by using a recursive function that calls itset whenerber the power is hishgt enought so that i can be withern as (M²)^n
 
-    out_matix = in_matrix;
-    dims_out = dims_in;
 
     std::vector<double> matrix_container(m * m, 0.0);
     std::vector<int> dims_matrix_container = {m, m};
 
-    if (power%2 == 0){ //is even
-        std::vector<double>& container_A = out_matix;
-        std::vector<int>& dims_container_A = dims_out;
-        std::vector<double>& container_B = matrix_container;
-        std::vector<int>& dims_container_B = dims_matrix_container;
-        
-    }
+    //the reason to change the firts container is so it is garanteed that the last operation is made on the out matrix variable
+    bool power_even = (power % 2 == 0);
+    std::vector<double>& container_A = (power_even) ? out_matrix : matrix_container;
+    std::vector<int>& dims_container_A = (power_even) ? dims_out : dims_matrix_container;
+
+    std::vector<double>& container_B = (power_even) ? matrix_container : out_matrix;
+    std::vector<int>& dims_container_B = (power_even) ? dims_matrix_container : dims_out;
+
     multipli_matrix(in_matrix,dims_in,in_matrix,dims_in,container_A,dims_container_A);//compute the scuare
 
-    //trivial
+    //the code takes 3 containers and it switches between one and another so in the calculus the values computed do not interfer in the operacion
     for(int ii = 1; ii < power-1; ii++){
-        multipli_matrix(in_matrix,dims_in,out_matix,dims_out,out_matix,dims_out); //be carefull with the definicion of multiplicacion so to not overrite values while computing
+        if (ii%2 != 0){ //is odd
+            multipli_matrix(container_A,dims_container_A,in_matrix,dims_in,container_B,dims_container_B); //be carefull with the definicion of multiplicacion so to not overrite values while computing
+        }else {
+            multipli_matrix(container_B,dims_container_B,in_matrix,dims_in,container_A,dims_container_A); //be carefull with the definicion of multiplicacion so to not overrite values while computing
+
+        }
     }       
 
 }
