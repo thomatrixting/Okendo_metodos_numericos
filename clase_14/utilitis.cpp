@@ -35,6 +35,8 @@ void matrix_to_the_power(const std::vector<double> &indata, const std::vector<in
 bool check_inverse(const std::vector<double> &A_matrix, const std::vector<int> &dims_A,
                      std::vector<double> &B_matrix, const std::vector<int> &dims_B,double epsilon);
 
+bool cheeck_idempotent_matrix(const std::vector<double> &A_matrix, const std::vector<int> &dims_A, int power, double epsilon);
+
 int main(int argc, char **argv)
 {
     check_args(argc, argv);
@@ -42,11 +44,13 @@ int main(int argc, char **argv)
     const int M = std::stoi(argv[1]);
     const int N = std::stoi(argv[2]);
     const int seed = std::stoi(argv[3]);
+/*
+    //fill matrix
 
     //create ramdom array
     std::vector<double> array2d(M * N, 0.0);
     std::vector<int> dimensions_array2d = {M, N};
-/*
+
     fill_matrix_random(array2d, dimensions_array2d,seed);
     print_matrix(array2d, dimensions_array2d);
 
@@ -56,7 +60,7 @@ int main(int argc, char **argv)
     transpose_matrix(array2d, dimensions_array2d, array2d_T, dimensions_array2d_T);
     print_matrix(array2d_T, dimensions_array2d_T);
 
-    //multipli with its transpose
+    //test multiplication
     std::vector<double> multiply_array;
     std::vector<int> dimensions_multiply_array(2,0);
     multipli_matrix(array2d, dimensions_array2d, array2d_T, dimensions_array2d_T, multiply_array, dimensions_multiply_array);
@@ -71,20 +75,20 @@ int main(int argc, char **argv)
     std::vector<int> dimensions_hilbert = {M, M}; //scuare so i dont have problems
     fill_matrix_hilbert(hilbert_matrix, dimensions_hilbert);
     print_matrix(hilbert_matrix,dimensions_hilbert);
-
+    
+    //multipli transpose
     std::vector<double> multiply_tranpose;
     std::vector<int> dimensions_multiply_tranpose(2,0);
     multiply_by_transpose(array2d,dimensions_array2d,multiply_tranpose,dimensions_multiply_tranpose);
     print_matrix(multiply_tranpose,dimensions_multiply_tranpose);
-*/
 
-    //for testing stadar amtrix
+    //check power
     std::vector<double> standar_matrix(M*M,0.0);
     std::vector<int> dimensions_standar_matrix = {M,M};
     fill_matrix(standar_matrix,dimensions_standar_matrix);
     print_matrix(standar_matrix,dimensions_standar_matrix);
 
-    //power matrix
+
     std::vector<double> power_2_matrix;
     std::vector<int> dimensions_power_2_matrix(2,0);
     std::cout << "matrix to the power of 2\n";
@@ -97,6 +101,7 @@ int main(int argc, char **argv)
     matrix_to_the_power(standar_matrix,dimensions_standar_matrix,power_4_matrix,dimensions_power_4_matrix,4);
     print_matrix(power_4_matrix,dimensions_power_4_matrix);
 
+    //check inverse
     std::vector<double> A_matrix = {1,2,3,0,1,4,5,6,0};
     std::vector<int> dims_A_matrix = {3,3};
 
@@ -112,11 +117,16 @@ int main(int argc, char **argv)
 
     bool inverse = check_inverse(A_matrix,dims_A_matrix,B_matrix,dims_B_matrix,10e-05);
 
+   std::cout << "inverse: " << inverse << "\n";
 
+    //check is idempotent
+    std::vector<double> idempotent_matrix = {3,2,-3,-2};
+    std::vector<int> dims_idempotent_matrix = {2,2};
 
-    std::cout << "inverse: " << inverse << "\n";
-
-
+    bool is_idempotent = cheeck_idempotent_matrix(idempotent_matrix,dims_idempotent_matrix, 2, 10e-5);
+    std::cout << "is idempotent: " << is_idempotent << "\n";
+*/
+    
     return 0;
 }
 
@@ -356,5 +366,47 @@ bool check_inverse(const std::vector<double> &A_matrix, const std::vector<int> &
     }
 
     return is_inverse;
+
+}
+
+bool cheeck_idempotent_matrix(const std::vector<double> &in_matrix, const std::vector<int> &dims_in, int power, double epsilon){
+    //if only powers of two and it needs to be fast a posibility is to make the multiplicacion of the matrix A while saving data on matrix A it shoud remain equal and that could be a criteria
+
+    int m = dims_in[0];
+    int n = dims_in[1];
+
+    if (m != n){
+        std::cerr << "cannot compute the power  of a matrix of a non scuare matrix and therefore detemine is it is idempotent: dimecions given "<< m << "X" << n << "\n";
+        std::cerr << "halting program";
+        std::exit(1);
+    }
+    if (power<2){
+
+        std::cerr << "The power to check if the matrix is idempotent of the funcion cannot be less than 2, power given: "<< power << "\n";
+        std::cerr << "halting program";
+        std::exit(1);
+    } 
+
+    std::vector<double> power_matrix(m * n, 0.0);
+    std::vector<int> dims_power_matrix = {m, n};
+
+    matrix_to_the_power(in_matrix,dims_in,power_matrix,dims_power_matrix,power);
+
+    bool is_idempotent = true;
+
+    for (int ii = 0; ii < m; ++ii) {
+        for (int jj = 0; jj < n; ++jj) {
+
+            is_idempotent = (std::abs(power_matrix[ii * n + jj] - in_matrix[ii * n + jj]) < epsilon);
+
+            if (!is_idempotent){
+                return is_idempotent;
+            }
+
+        }
+    }
+
+    return is_idempotent;
+
 
 }
