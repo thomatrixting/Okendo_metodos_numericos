@@ -1,27 +1,21 @@
 #include <iostream>
 #include <vector>
-#include <string>
 #include <cassert>
-#include <random>
 #include <cmath>
 
+using std::cos;
+using std::sin;
 
-//implementacions
 void check_args(int argc, char **argv);
-
-void fill_matrix(std::vector<double> &data, const std::vector<int> &dims);
 
 void print_matrix(const std::vector<double> &data, const std::vector<int> &dims);
 
-void transpose_matrix(const std::vector<double> &indata, const std::vector<int> &dims_in,
-                      std::vector<double> &outdata, std::vector<int> &dims_out);
 
 void multipli_matrix(const std::vector<double> &matrix_1, const std::vector<int> &dims_1,
                             const std::vector<double> &matrix_2, const std::vector<int> &dims_2,
                             std::vector<double> &dataout, std::vector<int> &dims_out);
 
 void Compute_new_posicion_robotic_arm(const std::vector<double> &inicial_posicion_vector, 
-                                      const int &column_vector_size, 
                                       const std::vector<double> &theta_vector, 
                                       std::vector<double> &final_posicion_vector);
 
@@ -29,24 +23,24 @@ int main(int argc, char **argv)
 {
     check_args(argc, argv);
 
-    const double vx = std::stoi(argv[1]);
-    const double vy = std::stoi(argv[2]);
-    const double vz = std::stoi(argv[3]);
+    const double vx = std::stod(argv[1]);
+    const double vy = std::stod(argv[2]);
+    const double vz = std::stod(argv[3]);
     
-    const double theta_x = std::stoi(argv[4]);
-    const double theta_y = std::stoi(argv[5]);
-    const double theta_z = std::stoi(argv[6]);
+    const double theta_x = std::stod(argv[4]);
+    const double theta_y = std::stod(argv[5]);
+    const double theta_z = std::stod(argv[6]);
 
-    std::vector<double> origin_vector = {vx,vy,vz};
-    std::vector<int> origin_vector_dims = {3,1};
+    const std::vector<int> vector_dims = {1,3};
 
-    std::vector<double> theta_vector = {theta_x,theta_y,theta_z}; //todo safe as reference
+    const std::vector<double> origin_vector = {vx,vy,vz}; 
+    const std::vector<double> theta_vector = {theta_x,theta_y,theta_z};
+
     std::vector<double> output_vector(3,0.0);
 
-    Compute_new_posicion_robotic_arm(origin_vector,3,theta_vector,output_vector);
-     
-    print_matrix(origin_vector,origin_vector_dims);
-    print_matrix(output_vector,origin_vector_dims);
+    Compute_new_posicion_robotic_arm(origin_vector,theta_vector,output_vector);
+
+    print_matrix(output_vector,vector_dims);
     
     return 0;
 }
@@ -61,19 +55,6 @@ void check_args(int argc, char **argv)
     }
 }
 
-// Fill the matrix
-void fill_matrix(std::vector<double> &data, const std::vector<int> &dims)
-{
-    int m = dims[0];
-    int n = dims[1];
-    for (int ii = 0; ii < m; ++ii) {
-        for (int jj = 0; jj < n; ++jj) {
-            data[ii * n + jj] = ii * n + jj; // A_(i, j) = i*n + j = id
-        }
-    }
-}
-
-
 // Print the matrix
 void print_matrix(const std::vector<double> &data, const std::vector<int> &dims)
 {
@@ -86,22 +67,6 @@ void print_matrix(const std::vector<double> &data, const std::vector<int> &dims)
         std::cout << "\n";
     }
     std::cout << "\n";
-}
-
-// Transpose the matrix
-void transpose_matrix(const std::vector<double> &indata, const std::vector<int> &dims_in,
-                      std::vector<double> &outdata, std::vector<int> &dims_out)
-{
-    int m = dims_in[0];
-    int n = dims_in[1];
-    outdata.resize(m * n); 
-    dims_out = {n, m}; // Transposed dimensions
-
-    for (int ii = 0; ii < m; ++ii) {
-        for (int jj = 0; jj < n; ++jj) {
-            outdata[jj * m + ii] = indata[ii * n + jj];
-        }
-    }
 }
 
 // Matrix multiplication
@@ -118,9 +83,8 @@ void multipli_matrix(const std::vector<double> &matrix_1, const std::vector<int>
     if (!(n_1 == m_2)) {
         std::cerr << "Matrices with shapes " << m_1 << "x" << n_1 << " and " << m_2 << "x" << n_2
                   << " cannot be multiplied.\n";
-        std::cerr << "Returning zero matrix.\n";
-        dataout.clear();
-        dims_out = {0, 0};
+        std::cerr << "halting execusion.\n";
+        std::exit(1);
         return;
     }
 
@@ -140,44 +104,38 @@ void multipli_matrix(const std::vector<double> &matrix_1, const std::vector<int>
     }
 }
 
+//computing the posicion of the robotic arm
 void Compute_new_posicion_robotic_arm(const std::vector<double> &inicial_posicion_vector, 
-                                      const int &column_vector_size, 
                                       const std::vector<double> &theta_vector, 
                                       std::vector<double> &final_posicion_vector) {
-    // Define dimensions for matrices
+    // Define dimensions for matrices 
+    //due to the context this values are set beacuse thsi implementacion only works on those cases
+    assert(
+        (inicial_posicion_vector.size() == 3) && 
+        ("Error: inicial_posicion_vector debe tener exactamente 3 cordenadas.")
+    );
+
+    final_posicion_vector.resize(3); //is better to be explicit 
+
     std::vector<int> dims_matrix = {3, 3};
     std::vector<int> dims_vector = {3, 1};
 
-    // Rotation matrix Rx(theta)
-    std::vector<double> R_x_theta = {
-        1, 0, 0,
-        0, std::cos(theta_vector[0]), -std::sin(theta_vector[0]),
-        0, std::sin(theta_vector[0]), std::cos(theta_vector[0])
+    //operated matrix that como from Rz * Ry * Rx as matrix multiplicacion is associative
+    std::vector<double> R_convine = {
+        cos(theta_vector[1]) * cos(theta_vector[2]),
+        sin(theta_vector[0]) * sin(theta_vector[1]) * cos(theta_vector[2]) - sin(theta_vector[2]) * cos(theta_vector[0]),
+        sin(theta_vector[0]) * sin(theta_vector[2]) + sin(theta_vector[1]) * cos(theta_vector[0]) * cos(theta_vector[2]),
+
+        cos(theta_vector[1]) * sin(theta_vector[2]),
+        sin(theta_vector[0]) * sin(theta_vector[1]) * sin(theta_vector[2]) + cos(theta_vector[0]) * cos(theta_vector[2]),
+        -sin(theta_vector[0]) * cos(theta_vector[2]) + sin(theta_vector[1]) * sin(theta_vector[2]) * cos(theta_vector[0]),
+
+        -sin(theta_vector[1]),
+        sin(theta_vector[0]) * cos(theta_vector[1]),
+        cos(theta_vector[0]) * cos(theta_vector[1])
     };
 
-    // Rotation matrix Ry(theta)
-    std::vector<double> R_y_theta = {
-        std::cos(theta_vector[1]), 0, std::sin(theta_vector[1]),
-        0, 1, 0,
-        -std::sin(theta_vector[1]), 0, std::cos(theta_vector[1])
-    };
-
-    // Rotation matrix Rz(theta)
-    std::vector<double> R_z_theta = {
-        std::cos(theta_vector[2]), -std::sin(theta_vector[2]), 0,
-        std::sin(theta_vector[2]), std::cos(theta_vector[2]), 0,
-        0, 0, 1
-    };
-
-    // Combine rotation matrices: R_combined = Rz * Ry * Rx
-    std::vector<double> R_combined_temp;
-    std::vector<int> dims_combined_temp;
-    multipli_matrix(R_z_theta, dims_matrix, R_y_theta, dims_matrix, R_combined_temp, dims_combined_temp);
-
-    std::vector<double> R_combined;
-    std::vector<int> dims_combined;
-    multipli_matrix(R_combined_temp, dims_combined_temp, R_x_theta, dims_matrix, R_combined, dims_combined);
-
-    // Compute final position vector: final_posicion = R * inicial_posicion_vector
-    multipli_matrix(R_combined, dims_combined, inicial_posicion_vector, dims_vector, final_posicion_vector, dims_vector);
+    //perform the operacion Rz * Ry * Rx * vi
+    multipli_matrix(R_convine, dims_matrix, inicial_posicion_vector, dims_vector, final_posicion_vector, dims_vector);
 }
+    
