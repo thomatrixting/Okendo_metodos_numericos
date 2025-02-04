@@ -1,68 +1,81 @@
-#include<iostream>
-#include<vector>
-#include<valarray>
+#include <iostream>
+#include <vector>
+#include <valarray>
+#include <fstream>
 
 void check_args(int argc, char **argv);
-void euler (const int i, const double delta, std::valarray<double> &state_vec); 
-void print_system (const int i, const double delta, const std::valarray<double> &state_vec);
+void euler(const int i, const double delta, std::valarray<double> &state_vec);
 void deriv(const double time, const std::valarray<double> &state_vec, std::valarray<double> &dsdt);
+double compute_mecanical_energy(const std::valarray<double> &state_vec);
+void simulacion(double T_inicial, double T_final, double dt, const std::string &filename, std::valarray<double> &state_vec);
 
-const double g = 9.81;
+const double G = 9.81;
+const double MASS = 1;
 
-int main(int argc, char **argv){
+int main(int argc, char **argv) {
+    check_args(argc, argv);
 
-    check_args(argc,argv);
+    double T_inicial = std::stod(argv[1]);
+    double T_final = std::stod(argv[2]);
+    double dt = std::stod(argv[3]);
+    std::string filename = argv[4];
 
+    // Inicialización del estado
     std::valarray<double> state_vec(2);
+    state_vec[0] = 2.0;  // Posición inicial en y
+    state_vec[1] = 10.0; // Velocidad inicial
 
-    state_vec[0] = std::stod(argv[1]);
-    state_vec[1] = std::stod(argv[2]);
-    int n = std::stoi(argv[3]);
-    
-    const double delta = 0.1 ;
+    simulacion(T_inicial, T_final, dt, filename, state_vec);
 
-    std::cout << "ttime: 0 " << "y: " << state_vec[0] << "v: " << state_vec[1] << "\n";
-
-    for (int i=0; i < n;i++){
-
-        euler(i,delta,state_vec);
-
-        print_system(i,delta,state_vec);
-
-    }
-
-
+    return 0;
 }
 
-void check_args(int argc, char **argv)
-{
-    // read variables
-    if (argc != 4) {
-    std::cerr << "Usage: " << argv[0] << "y v i" << std::endl;
-    std::cerr << "y: inicial position on y axis v: inicial velociti on y axis, i: #iteracions" << std::endl;
-    std::exit(1);
+void check_args(int argc, char **argv) {
+    if (argc != 5) {
+        std::cerr << "Uso: " << argv[0] << " T_inicial T_final dt archivo_salida.csv" << std::endl;
+        std::cerr << "T_inicial: tiempo inicial, T_final: tiempo final" << std::endl;
+        std::cerr << "dt: incremento de tiempo, archivo_salida.csv: nombre del archivo donde se guardarán los datos" << std::endl;
+        std::exit(1);
     }
 }
 
-void euler (const int i, const double delta, std::valarray<double> &state_vec){
+void euler(const int i, const double delta, std::valarray<double> &state_vec) {
+    std::valarray<double> dsdt(state_vec.size());
+    double time = i * delta;
 
-    std::valarray<double> dsdt (state_vec.size());
-    double time =  i*delta;
+    deriv(time, state_vec, dsdt);
 
-    deriv(time,state_vec,dsdt);
-
-    state_vec = state_vec + delta*dsdt;
-
+    state_vec = state_vec + delta * dsdt;
 }
 
-void deriv(const double time, const std::valarray<double> &state_vec, std::valarray<double> &dsdt){
+void deriv(const double time, const std::valarray<double> &state_vec, std::valarray<double> &dsdt) {
     dsdt[0] = state_vec[1];
-    dsdt[1] = -g;
+    dsdt[1] = -G;
 }
 
-void print_system (const int i, const double delta, const std::valarray<double> &state_vec){
+double compute_mecanical_energy(const std::valarray<double> &state_vec) {
+    return MASS * (state_vec[0] * G + 0.5 * state_vec[1] * state_vec[1]);
+}
 
-    std::cout << "time: " << i*delta << " ";
-    std::cout << "y: " << state_vec[0] << "v: " << state_vec[1] << "\n";
+void simulacion(double T_inicial, double T_final, double dt, const std::string &filename, std::valarray<double> &state_vec) {
+    std::ofstream file(filename);
+    if (!file) {
+        std::cerr << "Error al abrir el archivo: " << filename << std::endl;
+        std::exit(1);
+    }
 
+    file << "time,y,v,energy\n";
+
+    double mecanical_energy = compute_mecanical_energy(state_vec);
+    file << "0," << state_vec[0] << "," << state_vec[1] << "," << mecanical_energy << "\n";
+
+    int n = (T_final - T_inicial) / dt;
+
+    for (int i = 0; i < n; i++) {
+        euler(i, dt, state_vec);
+        mecanical_energy = compute_mecanical_energy(state_vec);
+        file << (i + 1) * dt << "," << state_vec[0] << "," << state_vec[1] << "," << mecanical_energy << "\n";
+    }
+
+    file.close();
 }
