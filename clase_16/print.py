@@ -1,3 +1,8 @@
+#comands to generate data
+#./euler_aprox.out 0 10 0.1 2 10 data_1.csv 
+#./euler_aprox.out 0 10 0.01 2 10 data_2.csv 
+#./euler_aprox.out 0 10 0.001 2 10 data_3.csv 
+
 import pandas as pd
 import matplotlib.pyplot as plt
 
