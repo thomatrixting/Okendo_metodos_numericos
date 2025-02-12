@@ -47,7 +47,7 @@ int main(int argc, char **argv) {
 
         std::valarray<double> state_vec(2);
         state_vec[0] = 2.0;
-        state_vec[1] = 10.0;
+        state_vec[1] = 0.0;
 
         deriv derivate(w);
 

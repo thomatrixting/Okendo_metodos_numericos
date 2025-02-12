@@ -1,23 +1,31 @@
-import pandas as pd
+import numpy as np
 import matplotlib.pyplot as plt
 
-euler_df = pd.read_csv("output-euler.txt",delimiter="\t")
-heun_df = pd.read_csv("output-euler.txt",delimiter="\t")
+# Cargar datos de Euler
+data_euler = np.loadtxt("output-euler.txt")
+x_euler = data_euler[:, 1]  # Segunda columna como eje x
+y_euler = data_euler[:, 2]  # Tercera columna como eje y
 
-print(euler_df)
+# Cargar datos de Heun
+data_heun = np.loadtxt("output-heun.txt")
+x_heun = data_heun[:, 1]  # Segunda columna como eje x
+y_heun = data_heun[:, 2]  # Tercera columna como eje y
 
-plt.plot(euler_df['y'], euler_df['v'], label="euler-method" ,alpha = 0.5)
-plt.plot(heun_df['y'], heun_df['v'], label="heun-method" ,alpha = 0.5)
+# Graficar
+plt.figure(figsize=(8, 6))
+plt.plot(x_euler, y_euler, label="Método de Euler", linestyle="-", marker="o")
+plt.plot(x_heun, y_heun, label="Método de Heun", linestyle="-", marker="h")
 
-
-plt.xlabel('distance (y)')
-plt.ylabel('velociti (v)')
-plt.title('distance vs velocity')
+# Etiquetas y título
+plt.xlabel("Posición ($ m $)")
+plt.ylabel("Velocidad ($ m/s $)")
+plt.title("Comparación de Métodos: Euler vs. Heun")
 plt.legend()
-plt.grid(True)
+plt.grid()
 
+# Ajustar espacios entre subgráficas
+plt.tight_layout()
 
-
-# Guardar y mostrar la gráfica
-plt.savefig("plot.pdf")
+# Guardar la figura
+plt.savefig("Grafica.pdf")
 plt.show()
